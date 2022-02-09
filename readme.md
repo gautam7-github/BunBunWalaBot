@@ -1,0 +1,6 @@
+# BunBunWalaBot
+
+
+
+# Strategy 
+- EMA CrossOvers
