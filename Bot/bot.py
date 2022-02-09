@@ -54,6 +54,7 @@ def main(URL: str = None):
                 if (lastEma8 > lastEma21) and (price < ema8):
                     sellLogic(symbol, price)
             lastEma8, lastEma21 = ema8, ema21
+            time.sleep(1*30)
         except Exception as e:
             logger.exception(e)
             time.sleep(1*59)
