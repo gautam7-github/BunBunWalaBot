@@ -17,10 +17,20 @@ LOW = 3
 CLOSE = 4
 
 
+def EMAData(close):
+    return talib.EMA(close, 8)[-1], talib.EMA(close, 8)[-2], talib.EMA(close, 21)[-1], talib.EMA(close, 21)[-2], close[-1]
+
+
+def MACDData(close):
+    return talib.MACD(close, fastperiod=12, slowperiod=26, signalperiod=9)
+
+
 def getData(URL: str = None):
     data = http.get(URL)
+    if data.status_code != 200:
+        raise Exception
     close = np.array([float(i[CLOSE]) for i in data.json()])
-    return talib.EMA(close, 8)[-1], talib.EMA(close, 8)[-2], talib.EMA(close, 21)[-1], talib.EMA(close, 21)[-2], close[-1]
+    return EMAData(close)
 
 
 def buyLogic(symbol, price):
@@ -47,14 +57,12 @@ def main(URL: str = None):
             ema8, lastEma8, ema21, lastEma21, price = getData(URL=URL)
             logger.info(
                 f"EMA8 : {ema8}\{lastEma8}, EMA21 : {ema21}\{lastEma21}, PRICE : {price}")
-            if ema8 > ema21:
-                if (lastEma8 < lastEma21) and (price > ema8):
+            if ema8 >= ema21:
+                if (lastEma8 < lastEma21):  # and (price > ema8):
                     buyLogic(symbol, price)
-            elif ema8 < ema21:
-                if (lastEma8 > lastEma21) and (price < ema8):
+            elif ema8 <= ema21:
+                if (lastEma8 > lastEma21):  # and (price < ema8):
                     sellLogic(symbol, price)
-            lastEma8, lastEma21 = ema8, ema21
-            time.sleep(1*30)
         except Exception as e:
             logger.exception(e)
             time.sleep(1*59)
