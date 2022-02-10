@@ -47,6 +47,13 @@ def onClose(wso):
     pass
 
 
-a = ws.WebSocketApp(
-    SOCKET, on_close=onClose, on_message=onM)
-a.run_forever()
+if __name__ == "__main__":
+    df = pd.read_csv("./data.csv", index_col=0)
+    print(df)
+    df["rsi"] = ta.momentum.RSIIndicator(
+        close=df["close"], window=2, fillna=False
+    ).rsi()
+    print(df)
+    # a = ws.WebSocketApp(
+    #     SOCKET, on_close=onClose, on_message=onM)
+    # a.run_forever()
